@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <title>Digitalquizz</title>
@@ -8,7 +9,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
+
+<script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBU0lKPQSgLlZJy8A95YPy3UvNjg43oNAE",
+    authDomain: "digitalquizz.firebaseapp.com",
+    databaseURL: "https://digitalquizz.firebaseio.com",
+    projectId: "digitalquizz",
+    storageBucket: "digitalquizz.appspot.com",
+    messagingSenderId: "415634368849"
+  };
+  firebase.initializeApp(config);
+
+</script>
+
 <body>
   <app-root>Loading...</app-root>
 </body>
+
 </html>
