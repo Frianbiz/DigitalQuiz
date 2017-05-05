@@ -1,3 +1,10 @@
 <p>
   client works!
-</p>
+  <p *ngIf="player == undefined">
+    Bienvenue !
+    <input [(ngModel)]="username" type="text" placeholder="Surnom" />
+    <button (click)="onSubmit()">Jouer !</button>
+  </p>
+  <p *ngIf="player != undefined">
+    <button (click)="onBuzz()" [disabled]="isDisableButton()"> BUZZER </button>
+  </p>
