@@ -38,7 +38,7 @@ export class ClientComponent implements OnInit {
   }
 
   public isDisableButton(): boolean {
-    if(this.game == undefined){
+    if (this.game == undefined) {
       return true;
     } else {
       return this.game.state !== 'OPEN';
@@ -64,7 +64,7 @@ export class ClientComponent implements OnInit {
 
 
   public succesAnswer() {
-    this.dataBase.ref('game').child('state').set('OPEN');
+    this.dataBase.ref('game').child('state').set('STANDBY');
     this.dataBase.ref('game').child('user').set(0);
   }
 }
