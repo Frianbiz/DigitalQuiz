@@ -34,7 +34,7 @@ import { QuestionsComponent } from './questions/questions.component';
         component: ClientComponent
       },
       {
-        path: 'questions/:id',
+        path: 'questions',
         component: QuestionsComponent
       },
     ]),
