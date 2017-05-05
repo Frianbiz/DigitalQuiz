@@ -12,14 +12,13 @@ import { Routes, RouterModule } from '@angular/router';
 import { QuestionsComponent } from './questions/questions.component';
 
 
-
 @NgModule({
   declarations: [
     AppComponent,
     BuzzerComponent,
     GameMasterComponent,
     ClientComponent,
-    QuestionsComponent
+    QuestionsComponent,
   ],
   imports: [
     BrowserModule,

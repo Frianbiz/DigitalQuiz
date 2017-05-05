@@ -1,3 +1,13 @@
+<p *ngIf="currentPlayer != undefined">
+  current Player : {{ currentPlayer.username}}
+</p>
+
 <p>
-  gamemaster works!
+  <button (click)="goodAnswer()">OK</button>
+</p>
+<p>
+  <button (click)="badAnswer()">NOK</button>
+</p>
+<p>
+  <button (click)="newtQuestion()">NEXT</button>
 </p>
