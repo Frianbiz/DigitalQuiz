@@ -38,24 +38,21 @@ export class ClientComponent implements OnInit {
   }
 
   public isDisableButton(): boolean {
-    if (this.game !== undefined) {
-      return this.game.state !== 'OPEN';
-    } else {
+    if(this.game == undefined){
       return true;
+    } else {
+      return this.game.state !== 'OPEN';
     }
   }
 
   public onSubmit() {
     let userId = this.dataBase.ref().child('users').push().key;
+
     this.dataBase.ref().child('users/' + userId).set({
       name: this.username,
     });
     var self = this;
-    this.dataBase.ref().child('users/' + userId).once('value').then(function (snapshot) {
-      var username = snapshot.val().name;
-      var id = userId;
-      self.player = new User(id, username);
-    });
+    self.player = new User(userId, this.username);
   }
 
   public onBuzz() {
