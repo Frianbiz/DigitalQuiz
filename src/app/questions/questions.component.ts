@@ -1,3 +1,4 @@
+import { User } from './../user';
 import { Component, OnInit } from '@angular/core';
 import * as firebase from '../../../node_modules/firebase/app';
 import 'firebase/database';
@@ -21,6 +22,7 @@ export class QuestionsComponent implements OnInit {
   public dataBase = firebase.database();
   public game: Game;
   public gameInstance: any;
+
 
   constructor(
     private route: ActivatedRoute,

@@ -31,8 +31,10 @@
 h1{text-align:center;margin:20% 0 5%;font-family:verdana;font-weight:100;}*/
 #radios{
   position:relative;
-  width:50%;
+  width: 15%;
   margin:0 auto;
+  margin-top: 5px;
+  height: 50px;
 }
 input[type="radio"]{
   position:absolute;
