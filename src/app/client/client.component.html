@@ -1,10 +1,24 @@
-<p>
-  client works!
-  <p *ngIf="player == undefined">
-    Bienvenue !
-    <input [(ngModel)]="username" type="text" placeholder="Surnom" />
-    <button (click)="onSubmit()">Jouer !</button>
-  </p>
-  <p *ngIf="player != undefined">
-    <button (click)="onBuzz()" [disabled]="isDisableButton()"> BUZZER </button>
-  </p>
+
+<div class="full">
+  <div class="login-page">
+
+    <div class="form">
+      <h1 class="title">Digital Quiz</h1>
+
+
+      <span class="login-form" *ngIf="player == undefined">
+        <input type="text" [(ngModel)]="username" type="text" placeholder="Entrez votre nom" />
+        <button (click)="onSubmit()">Rejoindre le Quiz !</button>
+      </span>
+      <span class="login-form" *ngIf="player != undefined">
+
+
+
+        <button class="btn-green" (click)="onBuzz()" [disabled]="isDisableButton()"> Répondre ! </button>
+  
+        <h2 *ngIf="isDisableButton()" >En attente</h2>
+
+      </span>
+    </div>
+  </div>
+    </div>

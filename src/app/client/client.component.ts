@@ -44,10 +44,8 @@ export class ClientComponent implements OnInit {
       return this.game.state !== 'OPEN';
     }
   }
-
   public onSubmit() {
     let userId = this.dataBase.ref().child('users').push().key;
-
     this.dataBase.ref().child('users/' + userId).set({
       name: this.username,
     });

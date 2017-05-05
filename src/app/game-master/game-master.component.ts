@@ -24,6 +24,7 @@ export class GameMasterComponent implements OnInit {
     this.gameInstance = this.dataBase.ref('game');
     this.gameInstance.on('value', (snap) => {
       self.game = new Game(snap.val().state, snap.val().user, snap.val().question);
+
       self.dataBase.ref('users/' + self.game.activeUser).once('value').then(function (snapshot) {
         if (snapshot.val() != null) {
           self.currentPlayer = new User(self.game.activeUser, snapshot.val().name);
