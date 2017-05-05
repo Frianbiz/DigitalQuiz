@@ -25,9 +25,9 @@ export class ClientComponent implements OnInit {
     const self = this;
     this.gameInstance = this.dataBase.ref('game');
     this.gameInstance.on('value', (snap) => {
-      self.game = new Game(snap.val().state, snap.val().user, snap.val().question);
-      if (snap.val().state === 'SUCCESS' && self.game.activeUser === self.player.id) {
-        self.succesAnswer();
+      this.game = new Game(snap.val().state, snap.val().user, snap.val().question);
+      if (snap.val().state === 'SUCCESS' && this.game.activeUser === this.player.id) {
+        this.succesAnswer();
       } else {
         console.log('fail');
       }
@@ -38,10 +38,11 @@ export class ClientComponent implements OnInit {
   }
 
   public isDisableButton(): boolean {
-    if (this.game == undefined) {
-      return true;
-    } else {
+    console.log(this.game);
+    if (this.game !== undefined) {
       return this.game.state !== 'OPEN';
+    } else {
+      return true;
     }
   }
   public onSubmit() {
