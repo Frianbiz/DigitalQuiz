@@ -25,16 +25,24 @@ export class ClientComponent implements OnInit {
     const self = this;
     this.gameInstance = this.dataBase.ref('game');
     this.gameInstance.on('value', (snap) => {
-      self.game.activeUser = snap.val().user;
-      self.game.state = snap.val().state;
+      self.game = new Game(snap.val().state, snap.val().user, snap.val().question);
+      if (snap.val().state === 'SUCCESS' && self.game.activeUser === self.player.id) {
+        self.succesAnswer();
+      } else {
+        console.log('fail');
+      }
     });
     this.dataBase.ref().child('game').once('value').then(function (snapshot) {
-      self.game = new Game(snapshot.val().state, snapshot.val().user);
+      self.game = new Game(snapshot.val().state, snapshot.val().user, snapshot.val().question);
     });
   }
 
   public isDisableButton(): boolean {
-    return this.game.activeUser !== '0';
+    if (this.game !== undefined) {
+      return this.game.state !== 'OPEN';
+    } else {
+      return true;
+    }
   }
 
   public onSubmit() {
@@ -51,13 +59,15 @@ export class ClientComponent implements OnInit {
   }
 
   public onBuzz() {
-    if (this.game.activeUser === '0') {
-      this.dataBase.ref().child('game').set({
-        state: this.game.state,
-        user: this.player.id
-      });
+    if (this.game.state === 'OPEN') {
+      this.dataBase.ref('game').child('state').set('STANDBY');
+      this.dataBase.ref('game').child('user').set(this.player.id);
     }
   }
 
 
+  public succesAnswer() {
+    this.dataBase.ref('game').child('state').set('OPEN');
+    this.dataBase.ref('game').child('user').set(0);
+  }
 }

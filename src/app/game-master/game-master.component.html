@@ -3,11 +3,11 @@
 </p>
 
 <p>
-  <button (click)="goodAnswer()">OK</button>
+  <button (click)="goodAnswer()" [disabled]="isDisableButton()">OK</button>
 </p>
 <p>
-  <button (click)="badAnswer()">NOK</button>
+  <button (click)="badAnswer()" [disabled]="isDisableButton()">NOK</button>
 </p>
 <p>
-  <button (click)="newtQuestion()">NEXT</button>
+  <button (click)="nextQuestion()">NEXT</button>
 </p>
