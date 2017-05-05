@@ -9,14 +9,14 @@ import 'rxjs/add/operator/switchMap';
 
 @Component({
   selector: 'app-questions',
-  templateUrl: './questions.component.html',
+  templateUrl: './dash.component.html',
   styleUrls: ['./questions.component.css']
 })
 export class QuestionsComponent implements OnInit {
 
-  public  question:String;
-  public  questionIndex:String;
-  public answers:Array<Answer>;
+  public question: String;
+  public questionIndex: String;
+  public answers: Array<Answer>;
   //
   public dataBase = firebase.database();
   public game: Game;
@@ -25,7 +25,7 @@ export class QuestionsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private location : Location
+    private location: Location
   ) {
     const self = this;
     this.gameInstance = this.dataBase.ref('game/question');
@@ -40,16 +40,15 @@ export class QuestionsComponent implements OnInit {
     //this.showQuestion(this.route.snapshot.params['id']);
   }
 
-  public showQuestion(questionIndex)
-  {
+  public showQuestion(questionIndex) {
     var self = this;
     console.log(this.route.params);
-    return firebase.database().ref('/questions/' + questionIndex).once('value').then(function(snapshot) {
+    return firebase.database().ref('/questions/' + questionIndex).once('value').then(function (snapshot) {
       self.questionIndex = questionIndex;
       self.question = snapshot.val().title;
       self.answers = [];
-      snapshot.val().answers.forEach((item)=>{
-          self.answers.push(new Answer(item));
+      snapshot.val().answers.forEach((item) => {
+        self.answers.push(new Answer(item));
       })
     });
   }
