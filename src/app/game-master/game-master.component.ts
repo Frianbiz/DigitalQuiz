@@ -50,12 +50,12 @@ export class GameMasterComponent implements OnInit {
 
   public goodAnswer() {
     this.dataBase.ref('game').child('state').set('SUCCESS');
-    this.dataBase.ref('game').child('user').set("0");
+    this.dataBase.ref('game').child('user').set('0');
   }
 
   public badAnswer() {
     this.dataBase.ref('game').child('state').set('OPEN');
-    this.dataBase.ref('game').child('user').set("0");
+    this.dataBase.ref('game').child('user').set('0');
   }
 
   public nextQuestion() {
