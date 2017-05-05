@@ -1,10 +1,14 @@
-<p>
-  {{questionIndex}} - {{question}}
-</p>
+<div id="header">
+  <div class="header-content">
+    <div class="question">
+      <h1 style="font-size: 2.8em;">
+        {{questionIndex}} - {{question}}
+      </h1>
 
+    </div>
 
-<ul class="heroes">
-  <li *ngFor="let answer of answers; let i=index" >
-      {{i + 1}} - {{answer.title}}
-  </li>
-</ul>
+    <div class="answers">
+
+    </div>
+  </div>
+</div>
