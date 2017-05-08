@@ -13,50 +13,73 @@ import 'rxjs/add/operator/switchMap';
   templateUrl: './dash.component.html',
   styleUrls: ['./questions.component.css']
 })
-export class QuestionsComponent implements OnInit {
+export class QuestionsComponent {
 
   public question: String;
+  public img: String;
   public questionIndex: String;
   public answers: Array<Answer>;
-  //
-  public dataBase = firebase.database();
+  public users: { [id: string] : User; } = {};
   public game: Game;
-  public gameInstance: any;
-
+  public currentState = 'OPEN';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private location: Location
   ) {
-    const self = this;
-    this.gameInstance = this.dataBase.ref('game/question');
-    this.gameInstance.on('value', (snap) => {
-      console.log(snap);
-      //location.go('/questions/'+snap.val().toString());
-      this.showQuestion(snap.val().toString());
-    });
-  }
 
-  ngOnInit() {
-    //this.showQuestion(this.route.snapshot.params['id']);
-  }
-
-  public showQuestion(questionIndex) {
     var self = this;
-    console.log(this.route.params);
-    return firebase.database().ref('/questions/' + questionIndex).once('value').then(function (snapshot) {
-      self.questionIndex = questionIndex;
-      self.question = snapshot.val().title;
-      self.answers = [];
-      snapshot.val().answers.forEach((item) => {
-        self.answers.push(new Answer(item));
-      })
+    var newQuestion = firebase.database().ref('game/question');
+    newQuestion.on('value', (snap) => {
+      this.retrieveQuestion(snap.val().toString());
+    });
+
+    var userInGame = firebase.database().ref('/users');
+    userInGame.on('child_changed', function(data) {
+      var user = self.users[data.key];
+      user.score =  data.val().score;
+      user.status = data.val().status;
+      user.statusLibelle = data.val().statusLibelle;
+      self.usersToArray();
+    });
+    userInGame.on('child_removed', function(data) {
+      delete self.users[data.key]
+    });
+    userInGame.on('child_added', function(data) {
+      self.users[data.key] = new User(data.key, data.val().score, data.val().status, data.val().statusLibelle)
     });
   }
 
+  public usersToArray()
+  {
+    let keyArr: any[] = Object.keys(this.users),
+    dataArr = [];
+    // loop through the object,
+    // pushing values to the return array
+    keyArr.forEach((key: any) => {
+        dataArr.push(this.users[key]);
+    });
+    // return the resulting array
+    return dataArr;
+  }
 
 
+  public retrieveQuestion(questionIndex){
+    var self = this;
+    return firebase.database().ref('/questions/' + questionIndex).once('value').then(function (snapshot) {
+      self.showQuestion(snapshot.val().title, snapshot.val().answers, snapshot.val().img);
+    });
+  }
 
-
+  public showQuestion(question, answers, img)
+  {
+    this.currentState = 'OPEN';
+    this.img= img;
+    this.question = question;
+    this.answers = [];
+    answers.forEach((item) => {
+      this.answers.push(new Answer(item));
+    });
+  }
 }

@@ -1,11 +1,11 @@
 export class Game {
     public state: String;
-    public activeUser: String;
-    public question: number;
+    public user: String;
+    public questionIndex: number;
 
-    constructor(state: String, activeUser: String, question: number) {
+    constructor(state: String, activeUser: String, questionIndex: number) {
         this.state = state;
-        this.activeUser = activeUser;
-        this.question = question;
+        this.user = activeUser;
+        this.questionIndex = questionIndex;
     }
 }

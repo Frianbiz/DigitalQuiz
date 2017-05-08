@@ -1,24 +1,29 @@
-
-<div class="full">
-  <div class="login-page">
-
-    <div class="form">
-      <h1 class="title">Digital Quiz</h1>
-
-
-      <span class="login-form" *ngIf="player == undefined">
-        <input type="text" [(ngModel)]="username" type="text" placeholder="Entrez votre nom" />
-        <button (click)="onSubmit()">Rejoindre le Quiz !</button>
-      </span>
-      <span class="login-form" *ngIf="player != undefined">
-
-
-
-        <button class="btn-green" (click)="onBuzz()" [disabled]="isDisableButton()"> Répondre ! </button>
-  
-        <h2 *ngIf="isDisableButton()" >En attente</h2>
-
-      </span>
+<div id="clientside">
+<div *ngIf="currentState == 'GUEST'">
+  <img class="digital" src="assets/img/digital.png"/><br/>
+  <h1> Bienvenue !</h1>
+  <input type="text" [(ngModel)]="name" type="text" placeholder="Entrez votre nom" required />
+  <button [disabled]="nameIsEmpty()" (click)="signup()">Rejoindre le Quiz !</button>
+</div>
+<div *ngIf="currentState != 'GUEST'">
+  <div class="clientheader">
+    <div [ngClass]="user().status" class="usercard">
+      <img class="usercardimgbig" src="{{'https://robohash.org/'+ user().name + '.png?set=set1'}}"/>
+      <br/>
+      <h1>{{user().name}} : {{user().score}}<br/>{{user().statusLibelle}}</h1>
+      <button [disabled]="user().status != 'STANDBY'" disclass="green" (click)="buzz()"> Répondre ! </button>
     </div>
   </div>
-    </div>
+</div>
+<br/>
+<hr>
+<br/>
+<h3>
+<i class="fa fa-twitter-square" aria-hidden="true"></i>
+<a href="https://twitter.com/intent/tweet?text=J&#39;ai relevé le challenge %23MaltemDigitalQuiz à l&#39;occasion des DIGITAL IT DAYS à Casablanca" class="share" data-lang="fr" data-show-count="false">Partager sur Twitter #MaltemDigitalQuiz</a>
+</h3>
+<h3>
+<i class="fa fa-linkedin-square" aria-hidden="true"></i>
+<a class="share" href="https://www.linkedin.com/shareArticle?mini=true&url=www.maltem.com&title=MaltemDigitalQuiz!&summary=J'ai%20relev%C3%A9%20le%20challenge%20%23MaltemDigitalQuiz%20%C3%A0%20l'occasion%20des%20DIGITAL%20IT%20DAYS%20%C3%A0%20Casablanca%20%23maltem&source=">Partager sur LinkedIn</a>
+</h3>
+</div>

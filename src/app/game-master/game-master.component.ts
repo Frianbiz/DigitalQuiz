@@ -1,6 +1,6 @@
 import { Game } from './../game';
 import { User } from './../user';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import * as firebase from '../../../node_modules/firebase/app';
 import 'firebase/auth';
@@ -11,62 +11,115 @@ import 'firebase/database';
   templateUrl: './game-master.component.html',
   styleUrls: ['./game-master.component.css']
 })
-export class GameMasterComponent implements OnInit {
+export class GameMasterComponent {
 
-  public dataBase = firebase.database();
   public currentPlayer: User;
-  public game: Game;
-  public gameInstance: any;
+  public users: { [id: string] : User; } = {};
   public totalQuestion: Number;
+  public game: Game;
 
   constructor() {
-    const self = this;
-    this.gameInstance = this.dataBase.ref('game');
-    this.gameInstance.on('value', (snap) => {
-      self.game = new Game(snap.val().state, snap.val().user, snap.val().question);
 
-      self.dataBase.ref('users/' + self.game.activeUser).once('value').then(function (snapshot) {
-        if (snapshot.val() != null) {
-          self.currentPlayer = new User(self.game.activeUser, snapshot.val().name);
-        } else {
-          self.currentPlayer = undefined;
-        }
-      });
-    });
-    this.dataBase.ref('questions').on('value', (snap) => {
-      this.totalQuestion = snap.numChildren();
-    });
-  }
+  var self = this;
+  self.game = new Game('OPEN','0',0);
 
-  ngOnInit() {
-  }
+  firebase.database().ref('game').on('value', (snap) => {
+    self.game = new Game(snap.val().state, snap.val().user, snap.val().question);
+  });
+  firebase.database().ref('questions').on('value', (snap) => {
+    this.totalQuestion = snap.numChildren();
+  });
 
-  public isDisableButton(): boolean {
-    if (this.game !== undefined) {
-      return this.game.state !== 'STANDBY';
-    } else {
-      return true;
+  var userInGame = firebase.database().ref('/users');
+  userInGame.on('child_changed', function(data) {
+    var user = self.users[data.key];
+    user.score =  data.val().score;
+    user.status = data.val().status;
+    user.statusLibelle = data.val().statusLibelle;
+
+    if(data.val().status == 'BUZZ')
+    {
+      self.currentPlayer = user;
     }
+    self.usersToArray();
+  });
+  userInGame.on('child_removed', function(data) {
+    delete self.users[data.key]
+  });
+  userInGame.on('child_added', function(data) {
+    self.users[data.key] = new User(data.key, data.val().score, data.val().status, data.val().statusLibelle)
+    if(data.val().status == 'BUZZ')
+    {
+      self.currentPlayer = self.users[data.key];
+    }
+  });
   }
 
-  public goodAnswer() {
-    this.dataBase.ref('game').child('state').set('SUCCESS');
-    this.dataBase.ref('game').child('user').set('0');
+  public goodAnswer()
+  {
+      var audio = new Audio('assets/sound/win.mp3');
+      audio.play();
+      var self = this;
+      var newScore = Number(self.users[this.currentPlayer.name].score)+1;
+      firebase.database().ref('users/'+self.currentPlayer.name).set({
+        score: newScore,
+        status: 'WIN',
+        statusLibelle: 'Bravo!',
+    });
   }
 
   public badAnswer() {
-    this.dataBase.ref('game').child('state').set('OPEN');
-    this.dataBase.ref('game').child('user').set('0');
+    var audio = new Audio('assets/sound/fail.mp3');
+    audio.play();
+
+
+    var self = this;
+    firebase.database().ref('/users/'+self.currentPlayer.name+'/score').once('value').then(function (snapshot) {
+
+      firebase.database().ref('users/'+self.currentPlayer.name).set({
+        score: self.currentPlayer.score,
+        status: 'FAIL',
+        statusLibelle: ':(',
+      })
+    });
   }
 
   public nextQuestion() {
-    let number = this.game.question + 1;
-    if (number <= this.totalQuestion) {
-      this.dataBase.ref('game').child('question').set(number);
-    } else {
-      this.dataBase.ref('game').child('question').set(1);
-    }
-    this.dataBase.ref('game').child('user').set("0");
+    var self = this;
+    let keyArr: any[] = Object.keys(this.users),
+    dataArr = [];
+    keyArr.forEach((key: any) => {
+      firebase.database().ref('users/' + key).set({
+        score: self.users[key].score,
+        status: "STANDBY",
+        statusLibelle: "À vous de jouer",
+      })
+    });
+
+  var nextQuestionIndex = (this.game.questionIndex == this.totalQuestion)?1:this.game.questionIndex+1;
+    firebase.database().ref('game').set({
+      question: nextQuestionIndex,
+      state: 'OPEN',
+      user:'',
+      answer_ts:Date.now()
+    });
   }
 
+  public remove(user)
+  {
+    if(user.length > 0)
+    {
+      firebase.database().ref('users/' + user).remove();
+    }
+  }
+
+  public usersToArray()
+  {
+    let keyArr: any[] = Object.keys(this.users),
+    dataArr = [];
+    keyArr.forEach((key: any) => {
+        dataArr.push(this.users[key]);
+    });
+    return dataArr;
+  }
 }

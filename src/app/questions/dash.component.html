@@ -1,23 +1,17 @@
-<div id="wrapper" class="fade-in">
-
-    <!-- Intro -->
-    <div id="intro">
-        <h1> {{question}}
-        </h1>
-        <p *ngFor="let answer of answers; let i=index">
-            {{i + 1}} - {{answer.title}}
-        </p>
-    </div>
-
-    <!-- Header -->
-
-
+<div class="users">
+<span  *ngFor="let user of usersToArray(); let i=index">
+  <div [ngClass]="user.status" class="usercard">
+    <img class="usercardimg" src="{{'https://robohash.org/'+ user.name + '.png?set=set1'}}"/>
+    <p class="usercardlabel">{{user.name}} : {{user.score}} <br/>{{user.statusLibelle}}</p>
+  </div>
+</span>
 </div>
 
-<!-- Scripts -->
-<script src="assets/js/jquery.min.js"></script>
-<script src="assets/js/jquery.scrollex.min.js"></script>
-<script src="assets/js/jquery.scrolly.min.js"></script>
-<script src="assets/js/skel.min.js"></script>
-<script src="assets/js/util.js"></script>
-<script src="assets/js/main.js"></script>
+
+<h1> {{question}}  </h1>
+<p *ngFor="let answer of answers; let i=index">
+    {{i + 1}} - {{answer.title}}
+</p>
+<div *ngIf="img">
+<img class="questionimg" src="{{img}}"/>
+</div>

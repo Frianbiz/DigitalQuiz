@@ -1,10 +1,13 @@
 export class User {
-    public username: String;
+    public name: string;
+    public status: string;
+    public statusLibelle: string;
+    public score: Number;
 
-    public id: String;
-
-    constructor(id: String, username: String) {
-        this.username = username;
-        this.id = id;
+    constructor(name: string, score: Number, status: string, statusLibelle: string) {
+        this.name = name;
+        this.score = score;
+        this.status = status;
+        this.statusLibelle = statusLibelle;
     }
 }

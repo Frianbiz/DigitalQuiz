@@ -1,13 +1,21 @@
-<p *ngIf="currentPlayer != undefined" style="color:white;">
-  current Player : {{ currentPlayer.username}}
-</p>
+<div class="users">
+<span  *ngFor="let user of usersToArray(); let i=index">
+  <div [ngClass]="user.status" class="usercard">
+    <img class="usercardimg" src="{{'https://robohash.org/'+ user.name + '.png?set=set1'}}"/>
+    <p class="usercardlabel">{{user.name}} : {{user.score}} <br/>{{user.statusLibelle}}</p>
+    <button class="smallbt" (click)="remove(user.name)">Supprimer</button>
+  </div>
+</span>
+</div>
+
 
 <p>
-  <button (click)="goodAnswer()" [disabled]="isDisableButton()">OK</button>
+  <button (click)="goodAnswer()" [disabled]="">Bonne réponse :)</button>
 </p>
 <p>
-  <button (click)="badAnswer()" [disabled]="isDisableButton()">NOK</button>
+  <button (click)="badAnswer()" [disabled]="">Mauvaise réponse :(</button>
 </p>
+
 <p>
   <button (click)="nextQuestion()">NEXT</button>
 </p>

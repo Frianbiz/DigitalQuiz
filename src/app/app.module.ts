@@ -6,7 +6,6 @@ import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
-import { BuzzerComponent } from './buzzer/buzzer.component';
 
 import { Routes, RouterModule } from '@angular/router';
 import { QuestionsComponent } from './questions/questions.component';
@@ -15,7 +14,6 @@ import { QuestionsComponent } from './questions/questions.component';
 @NgModule({
   declarations: [
     AppComponent,
-    BuzzerComponent,
     GameMasterComponent,
     ClientComponent,
     QuestionsComponent,

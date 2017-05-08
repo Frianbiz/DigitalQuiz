@@ -1,6 +1,6 @@
 import { Game } from './../game';
 import { User } from './../user';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 import * as firebase from '../../../node_modules/firebase/app';
 import 'firebase/auth';
@@ -11,59 +11,90 @@ import 'firebase/database';
   templateUrl: './client.component.html',
   styleUrls: ['./client.component.css']
 })
-export class ClientComponent implements OnInit {
+export class ClientComponent{
 
-  public dataBase = firebase.database();
-  public username: String = '';
-  public player: User;
-  public game: Game;
-  public gameInstance: any;
+  public currentState = 'GUEST';
+  public name: string = '';
+  public users: { [id: string] : User; } = {};
+  public buzzSound;
 
-  constructor() { }
-
-  ngOnInit() {
-    const self = this;
-    this.gameInstance = this.dataBase.ref('game');
-    this.gameInstance.on('value', (snap) => {
-      this.game = new Game(snap.val().state, snap.val().user, snap.val().question);
-      if (snap.val().state === 'SUCCESS' && this.game.activeUser === this.player.id) {
-        this.succesAnswer();
-      } else {
-        console.log('fail');
+  constructor() {
+      this.buzzSound = new Audio('assets/sound/play.mp3');
+      var self = this;
+      var userInGame = firebase.database().ref('/users');
+      userInGame.on('child_removed', function(data) {
+        delete self.users[data.key]
+      });
+      userInGame.on('child_added', function(data) {
+        self.users[data.key] = new User(data.key, data.val().score, data.val().status, data.val().statusLibelle)
+      });
+  }
+  public nameIsEmpty()
+  {
+    return this.name.length <= 0;
+  }
+  public user()
+  {
+    return this.users[this.name];
+  }
+  public userDisable()
+  {
+    return this.users[this.name].status == 'DISABLE';
+  }
+  public signup()
+  {
+    var self = this;
+    firebase.database().ref('users/' + this.name).once('value', function(data) {
+      if( !data.val()) //User not already exist
+      {
+          self.createUser();
+      }
+      else
+      {
+          self.users[self.name] = new User(data.key, data.val().score, 'STANDBY', 'Welcome Back');
+          self.play();
       }
     });
-    this.dataBase.ref().child('game').once('value').then(function (snapshot) {
-      self.game = new Game(snapshot.val().state, snapshot.val().user, snapshot.val().question);
-    });
   }
 
-  public isDisableButton(): boolean {
-    console.log(this.game);
-    if (this.game !== undefined) {
-      return this.game.state !== 'OPEN';
-    } else {
-      return true;
-    }
-  }
-  public onSubmit() {
-    let userId = this.dataBase.ref().child('users').push().key;
-    this.dataBase.ref().child('users/' + userId).set({
-      name: this.username,
-    });
+  public createUser()
+  {
     var self = this;
-    self.player = new User(userId, this.username);
+    firebase.database().ref('users/' + this.name).set({
+      score: 0,
+      status: 'STANDBY',
+      statusLibelle: 'Welcome !',
+    }).then(function(snapshot) {
+      self.users[self.name] = new User(self.name, 0, 'STANDBY', 'Welcome !');
+      self.play();
+    });
   }
 
-  public onBuzz() {
-    if (this.game.state === 'OPEN') {
-      this.dataBase.ref('game').child('state').set('STANDBY');
-      this.dataBase.ref('game').child('user').set(this.player.id);
-    }
+  public buzz()
+  {
+    this.buzzSound.play();
+    var self = this;
+    let keyArr: any[] = Object.keys(this.users),
+    dataArr = [];
+    keyArr.forEach((key: any) => {
+      firebase.database().ref('users/' + key).set({
+        score: self.users[key].score,
+        status: (key == self.name)?"BUZZ":"DISABLE",
+        statusLibelle: (key == self.name)?"Buzz!!!":"Patientez...",
+      })
+    });
   }
+  
+  public play()
+  {
+    this.currentState = 'INGAME';
 
-
-  public succesAnswer() {
-    this.dataBase.ref('game').child('state').set('STANDBY');
-    this.dataBase.ref('game').child('user').set(0);
+    var self = this;
+    var userInGame = firebase.database().ref('/users/'+this.name);
+    userInGame.on('value', function(data) {
+      self.users[self.name].score = data.val().score;
+      self.users[self.name].status = data.val().status;
+      self.users[self.name].statusLibelle = data.val().statusLibelle;
+    });
   }
 }
