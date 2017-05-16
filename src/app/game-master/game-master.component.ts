@@ -43,9 +43,11 @@ export class GameMasterComponent {
     }
     self.usersToArray();
   });
+
   userInGame.on('child_removed', function(data) {
     delete self.users[data.key]
   });
+
   userInGame.on('child_added', function(data) {
     self.users[data.key] = new User(data.key, data.val().score, data.val().status, data.val().statusLibelle)
     if(data.val().status == 'BUZZ')
@@ -57,8 +59,6 @@ export class GameMasterComponent {
 
   public goodAnswer()
   {
-      var audio = new Audio('assets/sound/win.mp3');
-      audio.play();
       var self = this;
       var newScore = Number(self.users[this.currentPlayer.name].score)+1;
       firebase.database().ref('users/'+self.currentPlayer.name).set({
@@ -69,17 +69,14 @@ export class GameMasterComponent {
   }
 
   public badAnswer() {
-    var audio = new Audio('assets/sound/fail.mp3');
-    audio.play();
-
-
     var self = this;
-    firebase.database().ref('/users/'+self.currentPlayer.name+'/score').once('value').then(function (snapshot) {
-
-      firebase.database().ref('users/'+self.currentPlayer.name).set({
-        score: self.currentPlayer.score,
-        status: 'FAIL',
-        statusLibelle: ':(',
+    let keyArr: any[] = Object.keys(this.users),
+    dataArr = [];
+    keyArr.forEach((key: any) => {
+      //console.log("for:"+key+ "score is"+self.users[key].score);
+      firebase.database().ref('users/' + key).update({
+        status: (key == self.currentPlayer.name)?"FAIL":"STANDBY",
+        statusLibelle: (key == self.currentPlayer.name)?":(":"À vous de jouer",
       })
     });
   }
@@ -89,8 +86,7 @@ export class GameMasterComponent {
     let keyArr: any[] = Object.keys(this.users),
     dataArr = [];
     keyArr.forEach((key: any) => {
-      firebase.database().ref('users/' + key).set({
-        score: self.users[key].score,
+      firebase.database().ref('users/' + key).update({
         status: "STANDBY",
         statusLibelle: "À vous de jouer",
       })

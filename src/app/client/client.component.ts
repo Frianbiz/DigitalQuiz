@@ -11,15 +11,21 @@ import 'firebase/database';
   templateUrl: './client.component.html',
   styleUrls: ['./client.component.css']
 })
+
 export class ClientComponent{
 
   public currentState = 'GUEST';
   public name: string = '';
   public users: { [id: string] : User; } = {};
   public buzzSound;
+  public winSound;
+  public failSound;
 
   constructor() {
       this.buzzSound = new Audio('assets/sound/play.mp3');
+      this.winSound = new Audio('assets/sound/win.mp3');
+      this.failSound = new Audio('assets/sound/fail.mp3');
+
       var self = this;
       var userInGame = firebase.database().ref('/users');
       userInGame.on('child_removed', function(data) {
@@ -77,14 +83,14 @@ export class ClientComponent{
     let keyArr: any[] = Object.keys(this.users),
     dataArr = [];
     keyArr.forEach((key: any) => {
-      firebase.database().ref('users/' + key).set({
-        score: self.users[key].score,
+      //console.log("for:"+key+ "score is"+self.users[key].score);
+      firebase.database().ref('users/' + key).update({
         status: (key == self.name)?"BUZZ":"DISABLE",
         statusLibelle: (key == self.name)?"Buzz!!!":"Patientez...",
       })
     });
   }
-  
+
   public play()
   {
     this.currentState = 'INGAME';
@@ -95,6 +101,14 @@ export class ClientComponent{
       self.users[self.name].score = data.val().score;
       self.users[self.name].status = data.val().status;
       self.users[self.name].statusLibelle = data.val().statusLibelle;
+      if(self.users[self.name].status == 'FAIL')
+      {
+        self.failSound.play();
+      }
+      else if(self.users[self.name].status == 'WIN')
+      {
+        self.winSound.play();
+      }
     });
   }
 }

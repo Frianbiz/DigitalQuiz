@@ -8,10 +8,10 @@
 </div>
 
 
-<h1> {{question}}  </h1>
-<p *ngFor="let answer of answers; let i=index">
+<h1 class="bigquestion"> {{question}}  </h1>
+<p class="answer" *ngFor="let answer of answers; let i=index">
     {{i + 1}} - {{answer.title}}
 </p>
 <div *ngIf="img">
-<img class="questionimg" src="{{img}}"/>
+  <img class="questionimg" src="{{img}}"/>
 </div>
